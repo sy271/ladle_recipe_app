@@ -28,8 +28,8 @@ class RecipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<LadleColors>()!;
-    final width = size == RecipeCardSize.sm ? 130.0 : 148.0;
-    final imageHeight = size == RecipeCardSize.sm ? 88.0 : 100.0;
+    final width = size == RecipeCardSize.sm ? 158.0 : 180.0;
+    final imageHeight = size == RecipeCardSize.sm ? 108.0 : 124.0;
 
     return GestureDetector(
       onTap: onTap,
@@ -66,8 +66,8 @@ class RecipeCard extends StatelessWidget {
                     child: GestureDetector(
                       onTap: onSave,
                       child: Container(
-                        width: 28,
-                        height: 28,
+                        width: 34,
+                        height: 34,
                         decoration: BoxDecoration(
                           // Photo scrim: hardcoded in the source for both
                           // themes (not a `t(dark)` token), so it stays fixed
@@ -77,7 +77,7 @@ class RecipeCard extends StatelessWidget {
                         ),
                         child: Icon(
                           LucideIcons.bookmark,
-                          size: 13,
+                          size: 16,
                           color: isSaved ? colors.navActive : Colors.white,
                         ),
                       ),
@@ -87,7 +87,7 @@ class RecipeCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -96,17 +96,17 @@ class RecipeCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.playfairDisplay(
-                      fontSize: 13,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      height: 1.1,
+                      height: 1.15,
                       color: colors.heading,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Text.rich(
                     TextSpan(
                       style: GoogleFonts.dmSans(
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: colors.meta,
                       ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../data/sample_data.dart';
 import '../theme/ladle_colors.dart';
 
 enum BottomNavTab { home, search, saved, profile }
@@ -11,12 +13,10 @@ class BottomNav extends StatelessWidget {
     super.key,
     required this.active,
     required this.onTabSelected,
-    required this.onAddTapped,
   });
 
   final BottomNavTab active;
   final ValueChanged<BottomNavTab> onTabSelected;
-  final VoidCallback onAddTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class BottomNav extends StatelessWidget {
             colors: colors,
             onTap: onTabSelected,
           ),
-          _AddButton(colors: colors, onTap: onAddTapped),
+          const _QuickActionsButton(),
           _NavItem(
             tab: BottomNavTab.saved,
             icon: LucideIcons.bookmark,
@@ -110,18 +110,39 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _AddButton extends StatelessWidget {
-  const _AddButton({required this.colors, required this.onTap});
+/// The raised "+" FAB. Tapping it rotates the icon 45° into an "×" and opens
+/// a blurred quick-actions sheet; tapping the sheet's backdrop, an action, or
+/// the same button again dismisses it.
+class _QuickActionsButton extends StatefulWidget {
+  const _QuickActionsButton();
 
-  final LadleColors colors;
-  final VoidCallback onTap;
+  @override
+  State<_QuickActionsButton> createState() => _QuickActionsButtonState();
+}
+
+class _QuickActionsButtonState extends State<_QuickActionsButton> {
+  bool _isOpen = false;
+
+  Future<void> _openSheet() async {
+    setState(() => _isOpen = true);
+    final outerContext = context;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.4),
+      builder: (sheetContext) => _QuickActionsSheet(outerContext: outerContext),
+    );
+    if (mounted) setState(() => _isOpen = false);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<LadleColors>()!;
+
     return Transform.translate(
       offset: const Offset(0, -20),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: _isOpen ? null : _openSheet,
         child: Container(
           width: 48,
           height: 48,
@@ -136,7 +157,99 @@ class _AddButton extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(LucideIcons.plus, size: 22, color: colors.primaryFg),
+          child: AnimatedRotation(
+            turns: _isOpen ? 0.125 : 0,
+            duration: const Duration(milliseconds: 200),
+            child: Icon(LucideIcons.plus, size: 22, color: colors.primaryFg),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickAction {
+  const _QuickAction(this.emoji, this.label, this.onSelect);
+
+  final String emoji;
+  final String label;
+  final void Function(BuildContext outerContext) onSelect;
+}
+
+final List<_QuickAction> _quickActions = [
+  _QuickAction(
+    '🔥',
+    'Start Cooking',
+    (outerContext) => outerContext.push('/recipe/${allRecipes.first.id}'),
+  ),
+  _QuickAction('📝', 'Add a Recipe', (outerContext) => outerContext.go('/saved')),
+  _QuickAction('📷', 'Scan Ingredients', (outerContext) => outerContext.go('/search')),
+  _QuickAction('📅', 'Plan My Week', (outerContext) => outerContext.push('/profile')),
+];
+
+class _QuickActionsSheet extends StatelessWidget {
+  const _QuickActionsSheet({required this.outerContext});
+
+  final BuildContext outerContext;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<LadleColors>()!;
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: colors.card,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: colors.cardBorder),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final action in _quickActions) ...[
+              _QuickActionRow(
+                action: action,
+                colors: colors,
+                onTap: () {
+                  debugPrint('QUICK ACTION TAPPED: ${action.label}');
+                  Navigator.of(context).pop();
+                  action.onSelect(outerContext);
+                },
+              ),
+              if (action != _quickActions.last) Divider(height: 1, color: colors.divider),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionRow extends StatelessWidget {
+  const _QuickActionRow({required this.action, required this.colors, required this.onTap});
+
+  final _QuickAction action;
+  final LadleColors colors;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Text(action.emoji, style: const TextStyle(fontSize: 20)),
+            const SizedBox(width: 14),
+            Text(
+              action.label,
+              style: GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w600, color: colors.heading),
+            ),
+          ],
         ),
       ),
     );

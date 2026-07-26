@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "579736019531",
+    "project_id": "flutter-recipe-5393f",
+    "storage_bucket": "flutter-recipe-5393f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579736019531:android:62c4ede2609566bade63ce",
+        "android_client_info": {
+          "package_name": "com.example.ladle_recipe_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "579736019531-282vsnpogvnocgobbrunr3jmuccfg0nq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ladle_recipe_app",
+            "certificate_hash": "30575a04429e52fa7ef52e31ca5038dfda8a075c"
+          }
+        },
+        {
+          "client_id": "579736019531-1g5bm4jt29gpa81h2pv3ls8o15mff3o2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUg_ileF7P26nDwZ7jemw1G0fxbHm0N2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "579736019531-1g5bm4jt29gpa81h2pv3ls8o15mff3o2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "579736019531-5uq0abebghknrtsdq9mnnrn1916ae0bm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ladleRecipeApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
