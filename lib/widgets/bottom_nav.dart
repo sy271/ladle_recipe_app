@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -128,9 +130,30 @@ class _QuickActionsButtonState extends State<_QuickActionsButton> {
     final outerContext = context;
     await showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.4),
-      builder: (sheetContext) => _QuickActionsSheet(outerContext: outerContext),
+      barrierColor: Colors.transparent,
+      enableDrag: false,
+      builder: (sheetContext) {
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.of(sheetContext).pop(),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                  child: Container(color: Colors.black.withValues(alpha: 0.35)),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: _QuickActionsSheet(outerContext: outerContext),
+            ),
+          ],
+        );
+      },
     );
     if (mounted) setState(() => _isOpen = false);
   }
@@ -214,7 +237,6 @@ class _QuickActionsSheet extends StatelessWidget {
                 action: action,
                 colors: colors,
                 onTap: () {
-                  debugPrint('QUICK ACTION TAPPED: ${action.label}');
                   Navigator.of(context).pop();
                   action.onSelect(outerContext);
                 },
@@ -237,19 +259,15 @@ class _QuickActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        child: Row(
-          children: [
-            Text(action.emoji, style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 14),
-            Text(
-              action.label,
-              style: GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w600, color: colors.heading),
-            ),
-          ],
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+        leading: Text(action.emoji, style: const TextStyle(fontSize: 20)),
+        title: Text(
+          action.label,
+          style: GoogleFonts.dmSans(fontSize: 15, fontWeight: FontWeight.w600, color: colors.heading),
         ),
       ),
     );
